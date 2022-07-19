@@ -1,5 +1,6 @@
 package com.example.notification
 
+import android.app.Notification.EXTRA_NOTIFICATION_ID
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -17,6 +18,8 @@ class MainActivity : AppCompatActivity() {
 
     private var notificationManager: NotificationManager? = null
     private var CHANNEL_ID = "channel_id"
+    private val KEY_TEXT_REPLY = "key_text_reply"
+
 
     private lateinit var countDownTimer: CountDownTimer
     private lateinit var binding: ActivityMainBinding
@@ -55,6 +58,13 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, notifikasiActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
+
+        val snoozeIntent = Intent(this, notifikasiActivity::class.java).apply {
+            putExtra(EXTRA_NOTIFICATION_ID, 0)
+        }
+        val snoozePendingIntent: PendingIntent =
+            PendingIntent.getBroadcast(this, 0, snoozeIntent, 0)
+
         val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
 
         // untuk menampilkan notifikasi
@@ -68,6 +78,10 @@ class MainActivity : AppCompatActivity() {
             )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
+            .addAction(
+                android.R.drawable.ic_menu_delete, "Snooze",
+                snoozePendingIntent
+            )
             .build()
 
         notificationManager?.notify(notifId, builder)
